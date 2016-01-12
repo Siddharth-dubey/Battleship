@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html ng-app="check">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content=width=device-width,initial-scale=1>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.0-rc.0/angular.min.js"></script>
+<style>
+.block{
+padding: 30px;
+  border: 1px solid #ddd;
+}
+</style>
+<title>Battleship | Play</title>
+</head>
+<body> 
+<div class="container" ng-controller="listing">
+<button ng-click="setShips()">play</button>
+<div class="col-lg-12">
+<div ng-repeat="m in rows" class="col-lg-12">
+<div ng-class="class_e" id={{'block'+m+''+n}} class="block" ng-click=hit(m,n) ng-repeat="n in columns" >
+{{name+m+n}}
+</div>
+</div>
+
+</div>
+</div>
+</body>
+<script>
+
+/*!
+ * Battleship v0.0.1 
+ * Copyright (C) 2016 Siddharth Dubey (http://siddharth-dubey.github.io)
+ * Licensed under MIT (https://github.com/Siddharth-dubey/Battleship/blob/master/LICENSE)
+*/
+(
+    function() {
+        var app = angular.module("check", []);
+        app.controller("listing", ['$scope', function($scope) {
+            $scope.name = "martin";
+            $scope.rows = [1, 2, 3, 4, 5, 6];
+            $scope.columns = [1, 2, 3, 4, 5, 6];
+            var shipPos = [
+                [0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0],
+                [0, 0, 0, 0, 0, 0]
+            ];
+            var len = $scope.columns.length;
+            if ((len && len > 0 && len <= 4) || (len == 6)) {
+                $scope.class_e = 'col-lg-' + 12 / len;
+            }
+            $scope.hit = function(m, n) {
+                checkHit(m, n);
+                console.log(m + 'row' + n + 'has been hit');
+                document.getElementById("block" + m + '' + n).style.background = "#f00";
+            };
+            var getPoint = function() {
+                console.log("wd");
+                var maximum = $scope.rows.length;
+                var minimum = 1;
+                var rR = Math.floor(Math.random() * (maximum - minimum + 1)) + minimum;
+                var rC = Math.floor(Math.random() * (maximum - minimum + 1)) + minimum;
+                return {
+                    row: rR,
+                    col: rC
+                };
+            };
+
+            var putShip = function(r, c, s, o) {
+                //1 for vertical 
+                // 11 for vertical down & 12 for vertical up 
+                // 2 for horizontal
+                //21 for horizontal right & 22 for horizontal left
+                if (o == 11) {
+                    for (var i = r; i <= (r + s - 1); i++) {
+                        console.log(shipPos);
+                        shipPos[i - 1][c - 1] = 1;
+                        console.log("block" + i + '' + c);
+                        document.getElementById("block" + i + '' + c).style.background = "#ddd";
+                    }
+                } else if (o == 12) {
+                    for (var k = r; k >= (r - s + 1); k--) {
+                        shipPos[k - 1][c - 1] = 2;
+                        document.getElementById("block" + k + '' + c).style.background = "#000";
+                    }
+                } else if (o == 21) {
+                    for (var j = c; j <= (c + s - 1); j++) {
+                        console.log(c);
+                        shipPos[r - 1][j - 1] = 3;
+                        console.log(r + '' + j);
+                        var sd = document.getElementById("block" + r + '' + j);
+                        sd.style.background = "#f00";
+                    }
+                    console.log(shipPos);
+                } else if (o == 22) {
+                    for (var m = c; m >= (c - s + 1); m--) {
+                        shipPos[r - 1][m - 1] = 4;
+                        document.getElementById("block" + r + '' + m).style.background = "#eee";
+                    }
+                }
+            };
+            $scope.setShips = function() {
+                console.log("setting ship");
+                var carrierSize = 5;
+                var battleshipSize = 4;
+                var submarineSize = 3;
+                var destroyerSize = 2;
+                var setCarrier = function() {
+                    var point = getPoint();
+                    console.log(point.row + '' + point.col);
+                    if ((carrierSize + point.row - 1) <= 6) {
+                        console.log("Starting point is" + point.row + '' + point.col + 'V');
+                        putShip(point.row, point.col, carrierSize, 11);
+                    } else if ((carrierSize + point.col - 1) <= 6) {
+                        console.log("Starting point is" + point.row + '' + point.col + 'H');
+                        putShip(point.row, point.col, carrierSize, 21);
+                    } else if ((point.row - carrierSize >= 0)) {
+                        console.log("Starting point is" + point.row + '' + point.col + 'Vx');
+                        putShip(point.row, point.col, carrierSize, 12);
+                    } else if ((point.col - carrierSize >= 0)) {
+                        console.log("Starting point is" + point.row + '' + point.col + 'Hx');
+                        putShip(point.row, point.col, carrierSize, 22);
+                    } else {
+                        setCarrier();
+                    }
+                };
+                setCarrier();
+            };
+            var random_hit = function() {
+                var maximum = 6;
+                var minimum = 1;
+                var rR = Math.floor(Math.random() * (maximum - minimum + 1)) + minimum;
+                var rC = Math.floor(Math.random() * (maximum - minimum + 1)) + minimum;
+                document.getElementById("block" + rR + '' + rC).style.background = "#f00";
+
+            };
+            var checkHit = function(m, n) {
+                ship_pos = 0;
+            };
+            //setInterval(random_hit,100); 
+            //setShips();
+        }]);
+    })();
+</script>
+</html>
